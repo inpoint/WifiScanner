@@ -4,10 +4,18 @@ import java.util.List;
 
 import java.io.*;
 import java.io.BufferedWriter;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.*;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.DialogInterface;
+import android.content.DialogInterface.*;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -17,6 +25,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,8 +73,23 @@ public class WifiScanner extends Activity implements OnClickListener {
 	}
 
 	@Override
+	public void onPause() {
+		// unregisterReceiver(receiver);
+		unregisterForContextMenu(textStatus);
+		unregisterForContextMenu(buttonScan);
+	}
+
+	@Override
 	public void onStop() {
 		// unregisterReceiver(receiver);
+		unregisterForContextMenu(textStatus);
+		unregisterForContextMenu(buttonScan);
+	}
+
+	@Override
+	public void onDestroy() {
+		unregisterForContextMenu(textStatus);
+		unregisterForContextMenu(buttonScan);
 	}
 
 	public void onClick(View view) {
@@ -79,18 +103,20 @@ public class WifiScanner extends Activity implements OnClickListener {
 		Toast.makeText(this, "Start Scan now!!", Toast.LENGTH_LONG).show();
 		if (view.getId() == R.id.buttonScan) {
 			Log.d(TAG, "onClick() wifi.startScan()");
+
+		}
+		
+		ArrayList<List<ScanResult>> ScanList = new ArrayList<List<ScanResult>>(5);
+		for (int scancount = 0; scancount < 5; scancount++) {
 			wifi.startScan();
 			try {
-				Thread.sleep(500);
+				Thread.sleep(700);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		
-		
-		for (int scancount = 0; scancount < 5; scancount++) {
 			List<ScanResult> results = this.wifi.getScanResults();
+			ScanList.add(results);
 			ScanResult bestSignal = null;
 			for (ScanResult result : results) {
 				if (bestSignal == null
@@ -103,23 +129,23 @@ public class WifiScanner extends Activity implements OnClickListener {
 					"%d round scan: %s networks found. %s is the strongest.",
 					scancount, results.size(), bestSignal.SSID);
 			textStatus.append(message + '\n');
-			 try {
-			 File myFile = new File(Environment
-			 .getExternalStorageDirectory().getPath()
-			 + "/Inpoint_ScanResult.txt");
-			 if (!myFile.exists())
-			 myFile.createNewFile();
-			 BufferedWriter bW;
-			 bW = new BufferedWriter(new FileWriter(myFile, true));
-			 bW.write(message);
-			 bW.newLine();
-			 bW.flush();
-			 bW.close();
-			
-			 } catch (Exception e) {
-			 Toast.makeText(getBaseContext(), e.getMessage(),
-			 Toast.LENGTH_SHORT).show();
-			 }
+			try {
+				File myFile = new File(Environment
+						.getExternalStorageDirectory().getPath()
+						+ "/Inpoint_ScanResult.txt");
+				if (!myFile.exists())
+					myFile.createNewFile();
+				BufferedWriter bW;
+				bW = new BufferedWriter(new FileWriter(myFile, true));
+				bW.write(message);
+				bW.newLine();
+				bW.flush();
+				bW.close();
+
+			} catch (Exception e) {
+				Toast.makeText(getBaseContext(), e.getMessage(),
+						Toast.LENGTH_SHORT).show();
+			}
 
 			Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 			for (int i = 0; i < results.size(); i++) {
@@ -130,28 +156,36 @@ public class WifiScanner extends Activity implements OnClickListener {
 								results.get(i).level);
 				// Toast.makeText(this, message1, Toast.LENGTH_LONG).show();
 				textStatus.append(message1 + '\n');
-				 try {
-				 File myFile = new File(Environment
-				 .getExternalStorageDirectory().getPath()
-				 + "/Inpoint_ScanResult.txt");
-				 if (!myFile.exists())
-				 myFile.createNewFile();
-				 BufferedWriter bW;
-				 bW = new BufferedWriter(new FileWriter(myFile, true));
-				 bW.write(message1);
-				 bW.newLine();
-				 bW.flush();
-				 bW.close();
-				
-				 } catch (Exception e) {
-				 Toast.makeText(getBaseContext(), e.getMessage(),
-				 Toast.LENGTH_SHORT).show();
-				 }
+				try {
+					File myFile = new File(Environment
+							.getExternalStorageDirectory().getPath()
+							+ "/Inpoint_ScanResult.txt");
+					if (!myFile.exists())
+						myFile.createNewFile();
+					BufferedWriter bW;
+					bW = new BufferedWriter(new FileWriter(myFile, true));
+					bW.write(message1);
+					bW.newLine();
+					bW.flush();
+					bW.close();
+
+				} catch (Exception e) {
+					Toast.makeText(getBaseContext(), e.getMessage(),
+							Toast.LENGTH_SHORT).show();
+				}
 			}
-			
+
 			// TODO Compare 5 scan results and Calculate an average value
 
 			Log.d(TAG, "onReceive() message: " + message);
+		}
+		List<ScanResult> average;
+		for(int i=0;i<5;i++){
+			List<ScanResult> res= ScanList.get(i);
+			for(int j=0;j<res.size();i++){
+				
+			}
+			
 		}
 	}
 }
