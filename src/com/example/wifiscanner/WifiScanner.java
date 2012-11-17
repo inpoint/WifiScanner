@@ -30,6 +30,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+
+import android.provider.Settings;
 import android.provider.Settings.Secure;
 
 public class WifiScanner extends Activity implements OnClickListener {
@@ -194,7 +196,21 @@ public class WifiScanner extends Activity implements OnClickListener {
 //			textStatus.append("round" + i + ":"+res.size()+"first ap sig:" + res.get(1).level);
 //			
 //		}
-		TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		textStatus.append(telephonyManager.getDeviceId());
+		/* get IMEI*/
+//		TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+//		textStatus.append(telephonyManager.getDeviceId());
+		/* get Android ID*/
+		String Id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+		textStatus.append(Id);
+		/* send AP info to the server through http*/
+		
+//		for(int i=0;i<5;i++){
+//			List<ScanResult> res= ScanList.get(i);
+//			for(int j=0;j<res.size();j++){
+//				
+//			}
+//			textStatus.append("round" + i + ":"+res.size()+"first ap sig:" + res.get(1).level);
+//			
+//		}
 	}
 }
