@@ -100,6 +100,7 @@ public class WifiScanner extends Activity implements OnClickListener {
 		}
 
 		textStatus = (TextView) findViewById(R.id.textStatus);
+		textStatus.setText("");
 		Toast.makeText(this, "Start Scan now!!", Toast.LENGTH_LONG).show();
 		if (view.getId() == R.id.buttonScan) {
 			Log.d(TAG, "onClick() wifi.startScan()");
@@ -179,13 +180,13 @@ public class WifiScanner extends Activity implements OnClickListener {
 
 			Log.d(TAG, "onReceive() message: " + message);
 		}
-		List<ScanResult> average;
-		for(int i=0;i<5;i++){
-			List<ScanResult> res= ScanList.get(i);
-			for(int j=0;j<res.size();i++){
-				
-			}
-			
-		}
+//		List<ScanResult> average;
+//		for(int i=0;i<5;i++){
+//			List<ScanResult> res= ScanList.get(i);
+//			for(int j=0;j<res.size();i++){
+//				
+//			}
+//			
+//		}
 	}
 }
