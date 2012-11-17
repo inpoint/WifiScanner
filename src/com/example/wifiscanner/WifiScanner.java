@@ -3,7 +3,6 @@ package com.example.wifiscanner;
 import java.util.List;
 
 import java.io.*;
-import java.io.BufferedWriter;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -22,6 +21,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import android.provider.Settings.Secure;
 
 public class WifiScanner extends Activity implements OnClickListener {
 	private static final String TAG = "WifiScanner";
@@ -180,13 +181,20 @@ public class WifiScanner extends Activity implements OnClickListener {
 
 			Log.d(TAG, "onReceive() message: " + message);
 		}
-//		List<ScanResult> average;
-//		for(int i=0;i<5;i++){
+//		List<ScanResult> average=ScanList.get(0);
+//		for(int i=1;i<5;i++){
 //			List<ScanResult> res= ScanList.get(i);
-//			for(int j=0;j<res.size();i++){
-//				
+//			for(int j=0;j<res.size();j++){
+//				for(int z=0;z<average.size();i++)
+//					if(res.get(j).BSSID==average.get(z).BSSID){
+//						average.get(z).level+=res.get(j).level;
+//						break;
+//					}
 //			}
+//			textStatus.append("round" + i + ":"+res.size()+"first ap sig:" + res.get(1).level);
 //			
 //		}
+		TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		textStatus.append(telephonyManager.getDeviceId());
 	}
 }
