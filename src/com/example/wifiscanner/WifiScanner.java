@@ -30,18 +30,20 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import android.provider.Settings.Secure;
 
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 
 public class WifiScanner extends Activity implements OnClickListener {
 	private static final String TAG = "WifiScanner";
+//	public static final String userID = android.provider.Settings.Secure.ANDROID_ID;
 	WifiManager wifi;
 	// BroadcastReceiver receiver;
 
 	TextView textStatus;
 	Button buttonScan;
-
+	String UserID = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,7 @@ public class WifiScanner extends Activity implements OnClickListener {
 
 		textStatus = (TextView) findViewById(R.id.textStatus);
 		textStatus.setText("");
+		textStatus.append(UserID);
 		Toast.makeText(this, "Start Scan now!!", Toast.LENGTH_LONG).show();
 		if (view.getId() == R.id.buttonScan) {
 			Log.d(TAG, "onClick() wifi.startScan()");
@@ -114,7 +117,7 @@ public class WifiScanner extends Activity implements OnClickListener {
 		for (int scancount = 0; scancount < 5; scancount++) {
 			wifi.startScan();
 			try {
-				Thread.sleep(700);
+				Thread.sleep(1500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
