@@ -234,8 +234,8 @@ public class WifiScanner extends Activity implements OnClickListener {
 						key,
 						Double.valueOf(map_sig.get(key).doubleValue()
 								/ map_num.get(key).doubleValue()));
-//			textStatus.append(key + ":" + map_avg.get(key).doubleValue() + " "
-//					+ map_num.get(key).doubleValue() + "\n");
+			textStatus.append(key + ":" + map_avg.get(key).doubleValue() + " "
+					+ map_num.get(key).doubleValue() + "\n");
 		}
 
 		// create a xml formatted string
@@ -248,18 +248,8 @@ public class WifiScanner extends Activity implements OnClickListener {
 			content += "<";
 			content += i;
 			content += ">";
-			content += "<MAC>";
-			content += key;
-			content += "</MAC>";
-			content += "<SIG>";
-			content += map_avg.get(key);
-			content += "</SIG>";
-			content += "</";
-			content += i;
-			content += ">";
 			i++;
 		}
-		content += "</content></session>";
 		xml = header + session + content;
 		textStatus.append(xml);
 
