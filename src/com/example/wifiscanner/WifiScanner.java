@@ -1,5 +1,6 @@
 package com.example.wifiscanner;
 
+import java.util.HashMap;
 import java.util.List;
 
 import java.io.*;
@@ -126,6 +127,12 @@ public class WifiScanner extends Activity implements OnClickListener {
 			Log.d(TAG, "onClick() wifi.startScan()");
 
 		}
+		wifi.startScan();
+		try {
+			Thread.sleep(700);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		ArrayList<List<ScanResult>> ScanList = new ArrayList<List<ScanResult>>(
 				5);
@@ -199,14 +206,52 @@ public class WifiScanner extends Activity implements OnClickListener {
 			Log.d(TAG, "onReceive() message: " + message);
 		}
 
+		HashMap<String, Double> map_sig = new HashMap<String, Double>();
+		HashMap<String, Double> map_num = new HashMap<String, Double>();
 		// TODO Compare 5 scan results and Calculate an average value
 		// List<ScanResult> average;
-		// for (int i = 0; i < 5; i++) {
-		// List<ScanResult> res = ScanList.get(i);
-		// for (int j = 0; j < res.size(); i++) {
-		//
-		// }
-		// }
+		for (int i = 0; i < 5; i++) {
+			List<ScanResult> res = ScanList.get(i);
+			for (int j = 0; j < res.size(); j++) {
+				if (!map_sig.containsKey(res.get(j).BSSID)) {
+					map_sig.put(res.get(j).BSSID,
+							Double.valueOf(res.get(j).level));
+					map_num.put(res.get(j).BSSID, Double.valueOf(1));
+				} else {
+					map_sig.put(res.get(j).BSSID,
+							(Double.valueOf(map_sig.get(res.get(j).BSSID))
+									.doubleValue() + res.get(j).level));
+					map_num.put(res.get(j).BSSID,
+							(Double.valueOf(map_num.get(res.get(j).BSSID))
+									.doubleValue() + 1));
+				}
+			}
+		}
+		HashMap<String, Double> map_avg = new HashMap<String, Double>();
+		for (String key : map_sig.keySet()) {
+			if (Double.valueOf(map_num.get(key)) >= 3)
+				map_avg.put(
+						key,
+						Double.valueOf(map_sig.get(key).doubleValue()
+								/ map_num.get(key).doubleValue()));
+			textStatus.append(key + ":" + map_avg.get(key).doubleValue() + " "
+					+ map_num.get(key).doubleValue() + "\n");
+		}
+
+		// create a xml formatted string
+		String xml;
+		String header = "<?xml version=\"1.0\"?>";
+		String session = "<session><number>" + map_avg.size() + "</number>";
+		String content = "<content>";
+		int i = 1;
+		for (String key : map_avg.keySet()) {
+			content += "<";
+			content += i;
+			content += ">";
+			i++;
+		}
+		xml = header + session + content;
+		textStatus.append(xml);
 
 		/* get IMEI */
 		// TelephonyManager telephonyManager =
@@ -218,58 +263,57 @@ public class WifiScanner extends Activity implements OnClickListener {
 		// Settings.Secure.ANDROID_ID);
 		// textStatus.append(Id);
 
-		// StringEntity se;
-		try {
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(
-					"http://inpoint.pdp.fi/wlan/wlan.php");
-			// StringEntity se = new StringEntity(xml, HTTP.UTF_8);
-			// se.setContentType("text/xml");
-			// httppost.setHeader("Content-Type",
-			// "application/soap+xml;charset=UTF-8");
-			// httppost.setEntity(se);
-
-			/* send AP info as a form to the server through http post */
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			// Your DATA
-			for (int i = 0; i < 5; i++) {
-				List<ScanResult> res = ScanList.get(i);
-				for (int j = 0; j < res.size(); j++) {
-					// nameValuePairs.add(new
-					// BasicNameValuePair(res.get(j).BSSID,
-					// String.valueOf(res.get(j).level)));
-					nameValuePairs.add(new BasicNameValuePair("MAC",
-							res.get(j).BSSID));
-					nameValuePairs.add(new BasicNameValuePair("SIG", String
-							.valueOf(res.get(j).level)));
-				}
-			}
-			// nameValuePairs.add(new BasicNameValuePair("id", "12345"));
-			// nameValuePairs.add(new
-			// BasicNameValuePair("stringdata","AndDev is Cool!"));
-
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			BasicHttpResponse httpResponse = (BasicHttpResponse) httpclient
-					.execute(httppost);
-
-			// tested for http get request, now works
-			// HttpGet getRequest = new HttpGet(
-			// "http://inpoint.pdp.fi/wlan/wlan.php");
-			// HttpResponse response = httpclient.execute(getRequest);
-
-			// read echo from server
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					httpResponse.getEntity().getContent(), "UTF-8"));
-			String json = reader.readLine();
-
-			textStatus.append(json);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// HttpClient httpclient = new DefaultHttpClient();
+		// HttpPost httppost = new HttpPost(
+		// "http://inpoint.pdp.fi/wlan/wlan.php");
+		// // StringEntity se = new StringEntity(xml, HTTP.UTF_8);
+		// // se.setContentType("text/xml");
+		// // httppost.setHeader("Content-Type",
+		// // "application/soap+xml;charset=UTF-8");
+		// // httppost.setEntity(se);
+		//
+		// /* send AP info as a form to the server through http post */
+		// List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		// // Your DATA
+		// for (int i = 0; i < 5; i++) {
+		// List<ScanResult> res = ScanList.get(i);
+		// for (int j = 0; j < res.size(); j++) {
+		// // nameValuePairs.add(new
+		// // BasicNameValuePair(res.get(j).BSSID,
+		// // String.valueOf(res.get(j).level)));
+		// nameValuePairs.add(new BasicNameValuePair("MAC",
+		// res.get(j).BSSID));
+		// nameValuePairs.add(new BasicNameValuePair("SIG", String
+		// .valueOf(res.get(j).level)));
+		// }
+		// }
+		// // nameValuePairs.add(new BasicNameValuePair("id", "12345"));
+		// // nameValuePairs.add(new
+		// // BasicNameValuePair("stringdata","AndDev is Cool!"));
+		//
+		// httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		//
+		// BasicHttpResponse httpResponse = (BasicHttpResponse) httpclient
+		// .execute(httppost);
+		//
+		// // tested for http get request, now works
+		// // HttpGet getRequest = new HttpGet(
+		// // "http://inpoint.pdp.fi/wlan/wlan.php");
+		// // HttpResponse response = httpclient.execute(getRequest);
+		//
+		// // read echo from server
+		// BufferedReader reader = new BufferedReader(new InputStreamReader(
+		// httpResponse.getEntity().getContent(), "UTF-8"));
+		// String json = reader.readLine();
+		//
+		// textStatus.append(json);
+		// } catch (UnsupportedEncodingException e) {
+		// e.printStackTrace();
+		// } catch (ClientProtocolException e) {
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 }
