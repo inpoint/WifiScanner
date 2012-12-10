@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import java.io.*;
+import java.net.URLEncoder;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -240,26 +241,28 @@ public class WifiScanner extends Activity implements OnClickListener {
 
 		// create a xml formatted string
 		String xml;
-		String header = "<?xml version=\"1.0\"?>";
-		String session = "<session><number>" + map_avg.size() + "</number>";
-		String content = "<content>";
-		int i = 1;
+		String header = "<?xml version='1.0'?>\n";
+		String session = "<session>\n <number>" + map_avg.size() + "</number>\n";
+		String content = " <content>\n";
+		int num = 1;
 		for (String key : map_avg.keySet()) {
-			content += "<";
-			content += i;
-			content += ">";
-			content += "<MAC>";
+			content += "  <";
+			content += num;
+//			content+= "item";
+			content += ">\n";
+			content += "   <MAC>";
 			content += key;
-			content += "</MAC>";
-			content += "<SIG>";
+			content += "</MAC>\n";
+			content += "   <SIG>";
 			content += map_avg.get(key);
-			content += "</SIG>";
-			content += "</";
-			content += i;
-			content += ">";
-			i++;
+			content += "</SIG>\n";
+			content += "  </";
+			content += num;
+//			content+="item";
+			content += ">\n";
+			num++;
 		}
-		content += "</content></session>";
+		content += " </content>\n</session>\n";
 		xml = header + session + content;
 		textStatus.append(xml);
 
@@ -273,57 +276,60 @@ public class WifiScanner extends Activity implements OnClickListener {
 		// Settings.Secure.ANDROID_ID);
 		// textStatus.append(Id);
 
-		// try {
-		// HttpClient httpclient = new DefaultHttpClient();
-		// HttpPost httppost = new HttpPost(
-		// "http://inpoint.pdp.fi/wlan/wlan.php");
-		// // StringEntity se = new StringEntity(xml, HTTP.UTF_8);
-		// // se.setContentType("text/xml");
-		// // httppost.setHeader("Content-Type",
-		// // "application/soap+xml;charset=UTF-8");
-		// // httppost.setEntity(se);
-		//
-		// /* send AP info as a form to the server through http post */
-		// List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		// // Your DATA
-		// for (int i = 0; i < 5; i++) {
-		// List<ScanResult> res = ScanList.get(i);
-		// for (int j = 0; j < res.size(); j++) {
-		// // nameValuePairs.add(new
-		// // BasicNameValuePair(res.get(j).BSSID,
-		// // String.valueOf(res.get(j).level)));
-		// nameValuePairs.add(new BasicNameValuePair("MAC",
-		// res.get(j).BSSID));
-		// nameValuePairs.add(new BasicNameValuePair("SIG", String
-		// .valueOf(res.get(j).level)));
-		// }
-		// }
-		// // nameValuePairs.add(new BasicNameValuePair("id", "12345"));
-		// // nameValuePairs.add(new
-		// // BasicNameValuePair("stringdata","AndDev is Cool!"));
-		//
-		// httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		//
-		// BasicHttpResponse httpResponse = (BasicHttpResponse) httpclient
-		// .execute(httppost);
-		//
-		// // tested for http get request, now works
-		// // HttpGet getRequest = new HttpGet(
-		// // "http://inpoint.pdp.fi/wlan/wlan.php");
-		// // HttpResponse response = httpclient.execute(getRequest);
-		//
-		// // read echo from server
-		// BufferedReader reader = new BufferedReader(new InputStreamReader(
-		// httpResponse.getEntity().getContent(), "UTF-8"));
-		// String json = reader.readLine();
-		//
-		// textStatus.append(json);
-		// } catch (UnsupportedEncodingException e) {
-		// e.printStackTrace();
-		// } catch (ClientProtocolException e) {
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+		try {
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost(
+					"http://inpoint.pdp.fi/wlan/wlan.php");
+			// StringEntity se = new StringEntity(xml, HTTP.UTF_8);
+			// se.setContentType("text/xml");
+			// httppost.setHeader("Content-Type",
+			// "application/soap+xml;charset=UTF-8");
+			// httppost.setEntity(se);
+
+			/* send AP info as a form to the server through http post */
+//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+//			// Your DATA
+//			for (int i = 0; i < 5; i++) {
+//				List<ScanResult> res = ScanList.get(i);
+//				for (int j = 0; j < res.size(); j++) {
+//					// nameValuePairs.add(new
+//					// BasicNameValuePair(res.get(j).BSSID,
+//					// String.valueOf(res.get(j).level)));
+//					nameValuePairs.add(new BasicNameValuePair("MAC",
+//							res.get(j).BSSID));
+//					nameValuePairs.add(new BasicNameValuePair("SIG", String
+//							.valueOf(res.get(j).level)));
+//				}
+//			}
+
+//			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			//send xml through http post
+			StringEntity se = new StringEntity(xml,HTTP.UTF_8);
+			se.setContentType("text/xml");  
+			httppost.setHeader("Content-Type","application/soap+xml;charset=UTF-8");
+			httppost.setEntity(se);  
+
+			BasicHttpResponse httpResponse = (BasicHttpResponse) httpclient
+					.execute(httppost);
+
+			// tested for http get request, now works
+			// HttpGet getRequest = new HttpGet(
+			// "http://inpoint.pdp.fi/wlan/wlan.php");
+			// HttpResponse response = httpclient.execute(getRequest);
+
+			// read echo from server
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					httpResponse.getEntity().getContent(), "UTF-8"));
+			String json = reader.readLine();
+
+			textStatus.append(json);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
