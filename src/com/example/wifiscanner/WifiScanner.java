@@ -247,8 +247,8 @@ public class WifiScanner extends Activity implements OnClickListener {
 		int num = 1;
 		for (String key : map_avg.keySet()) {
 			content += "  <";
-			content += num;
-//			content+= "item";
+//			content += num;
+			content+= "item";
 			content += ">\n";
 			content += "   <MAC>";
 			content += key;
@@ -257,8 +257,8 @@ public class WifiScanner extends Activity implements OnClickListener {
 			content += map_avg.get(key);
 			content += "</SIG>\n";
 			content += "  </";
-			content += num;
-//			content+="item";
+//			content += num;
+			content+="item";
 			content += ">\n";
 			num++;
 		}
