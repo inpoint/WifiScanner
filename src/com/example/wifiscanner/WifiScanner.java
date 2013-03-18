@@ -75,19 +75,6 @@ public class WifiScanner extends Activity implements OnClickListener {
 		// Setup WiFi
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
-		// Get WiFi status
-		/*
-		 * WifiInfo info = wifi.getConnectionInfo();
-		 * textStatus.append("\n\nWiFi Status: " + info.toString());
-		 */
-
-		// List available networks
-		/*
-		 * List<WifiConfiguration> configs = wifi.getConfiguredNetworks(); for
-		 * (WifiConfiguration config : configs) { textStatus.append("\n\n" +
-		 * config.toString()); }
-		 */
-
 		textStatus.append("Start scanning and logging..\n");
 		// registerReceiver(receiver, new IntentFilter(
 		// WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
